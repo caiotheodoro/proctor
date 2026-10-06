@@ -6,9 +6,9 @@ Resume point for a fresh session. Update the state table at the end of a session
 
 | Item | State |
 |---|---|
-| Doc spine | this commit |
-| Pre-registration | `1.0.0-draft` until the freeze commit |
-| `schema/` | not started |
+| Doc spine | committed |
+| Pre-registration | `1.0.0` frozen |
+| `schema/` | committed; read-only for later owners |
 | Generator, oracle, score, arms | not started |
 | `make validate` | spine gates only |
 | H1–H3 | not scored |
@@ -19,7 +19,7 @@ Resume point for a fresh session. Update the state table at the end of a session
 ## Next
 
 1. Freeze: a commit that touches only `docs/PRE-REGISTRATION.md` and `docs/DECISIONS.md`.
-2. Implement `schema/` from `CONTRACTS.md`, with a round-trip test. Nothing else in that commit.
+2. `schema/` is in the tree. Do not edit it.
 3. Fan out owners. One owner per directory. Nobody edits `schema/` or the frozen protocol.
 4. Integrate: leak probe, card, `make validate` green with no network.
 5. `make baselines`.
