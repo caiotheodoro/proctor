@@ -1,6 +1,8 @@
 # Pre-registration
 
-Revision: `1.0.0-draft`
+Revision: `1.0.0`
+
+Frozen. The commit that set this revision touches only this file and `docs/DECISIONS.md`.
 
 This file is the protocol. Arms, cells, sample sizes, statistics, hypotheses, and stopping rules do not change because a result was inconvenient. After the freeze commit, this file is not edited. A change is a dated entry in `docs/DECISIONS.md` naming what changed, why, and which number it used to be.
 
