@@ -11,8 +11,8 @@ Resume point for a fresh session. Update the state table at the end of a session
 | `schema/` | committed; read-only |
 | Generator, oracle, score, schema arm, judge client | committed; `make validate` is the gate |
 | H1–H3 | scored; all three hold. Figures in `MEASUREMENT_CARD.json` |
-| Judge | not run. `make judge` records a blocker when the server is unset |
-| Trained arm | not run. `python -m proctor_model.train` refuses without CUDA and does not write a `qlora-grpo` manifest |
+| Judge | blocked: `PROCTOR_JUDGE_BASE_URL` unset. Modal spend limit stopped a probe before a container started |
+| Trained arm | blocked: no CUDA here; Modal spend limit; AWS token rejected. No `qlora-grpo` manifest |
 | Seed 999 | untouched test split |
 
 ## Next
