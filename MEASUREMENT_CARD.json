@@ -1,0 +1,90 @@
+{
+  "contract": {
+    "audit_fn": 5,
+    "audit_fp": 1,
+    "bootstrap_level": 95,
+    "bootstrap_resamples": 1000,
+    "bootstrap_seed": 11011,
+    "classes": 6,
+    "dev_seed": 777,
+    "dev_tasks": 84,
+    "enforce_fn": 1,
+    "enforce_fp": 5,
+    "judge_model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "license": "Apache-2.0",
+    "model_seeds": [
+      11,
+      22,
+      33,
+      44
+    ],
+    "per_cell_test": 36,
+    "protocol": "1.0.0",
+    "test_seed": 999,
+    "test_tasks": 252,
+    "tools": 8,
+    "train_seed": 7,
+    "train_tasks": 420,
+    "weight_high": 5,
+    "weight_low": 1,
+    "weight_med": 2
+  },
+  "limitation": "Transfer to real agent logs is unmeasured.",
+  "results": {
+    "flag_everything": {
+      "audit": {
+        "hi": 24.452381,
+        "lo": 22.579365,
+        "mean": 23.511905
+      },
+      "enforce": {
+        "hi": 122.261905,
+        "lo": 112.896825,
+        "mean": 117.559524
+      }
+    },
+    "h1": {
+      "diff": -114.845238,
+      "hi": -110.261905,
+      "holds": true,
+      "lo": -119.769841
+    },
+    "h2": {
+      "holds": true,
+      "mean": 13.571429
+    },
+    "h3": {
+      "holds": true,
+      "schema_break_recall": 1.0,
+      "wrong_unit_recall": 0.0
+    },
+    "n": 252,
+    "published": {
+      "flag_audit": 23.51,
+      "flag_enforce": 117.56,
+      "h1_diff": -114.85,
+      "h1_hi": -110.26,
+      "h1_lo": -119.77,
+      "schema_audit": 13.57,
+      "schema_enforce": 2.71
+    },
+    "schema_only": {
+      "audit": {
+        "hi": 14.84127,
+        "lo": 12.18254,
+        "mean": 13.571429
+      },
+      "enforce": {
+        "hi": 2.968254,
+        "lo": 2.436508,
+        "mean": 2.714286
+      }
+    },
+    "split": "test"
+  },
+  "unmet": [
+    "judge arm has not been run against the pinned model Qwen/Qwen2.5-1.5B-Instruct",
+    "trained arm across-seed standard deviation is absent; four qlora-grpo manifests are required and seed 999 stays untouched"
+  ],
+  "verdict": "NOT_VERIFIED"
+}

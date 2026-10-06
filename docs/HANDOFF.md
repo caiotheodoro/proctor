@@ -8,22 +8,18 @@ Resume point for a fresh session. Update the state table at the end of a session
 |---|---|
 | Doc spine | committed |
 | Pre-registration | `1.0.0` frozen |
-| `schema/` | committed; read-only for later owners |
-| Generator, oracle, score, arms | not started |
-| `make validate` | spine gates only |
-| H1–H3 | not scored |
-| Judge | not run |
-| Trained arm | not run; card will stay `NOT_VERIFIED` without four `qlora-grpo` manifests |
-| Seed 999 | reserved; no loader exists yet |
+| `schema/` | committed; read-only |
+| Generator, oracle, score, schema arm, judge client | committed; `make validate` is the gate |
+| H1–H3 | scored; all three hold. Figures in `MEASUREMENT_CARD.json` |
+| Judge | not run. `make judge` records a blocker when the server is unset |
+| Trained arm | not run. `python -m proctor_model.train` refuses without CUDA and does not write a `qlora-grpo` manifest |
+| Seed 999 | untouched test split |
 
 ## Next
 
-1. Freeze: a commit that touches only `docs/PRE-REGISTRATION.md` and `docs/DECISIONS.md`.
-2. `schema/` is in the tree. Do not edit it.
-3. Fan out owners. One owner per directory. Nobody edits `schema/` or the frozen protocol.
-4. Integrate: leak probe, card, `make validate` green with no network.
-5. `make baselines`.
-6. Judge and training only on the runners named in `CONTRACTS.md` section 10. If they are unreachable, write the blocker into the card's `unmet` list and stop. Do not substitute a model.
+1. `make judge` when `PROCTOR_JUDGE_BASE_URL` points at `Qwen/Qwen2.5-1.5B-Instruct`.
+2. Four CUDA seeds via `cloud/modal_train.py` or `python -m proctor_model.train` on a machine with CUDA. Each manifest needs `backend=qlora-grpo` and a float `test_enforce_loss`.
+3. Re-run `make card` after either artifact exists. Do not substitute a backend.
 
 ## What not to do
 

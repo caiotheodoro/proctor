@@ -1,4 +1,5 @@
 # Targets are the table of contents. validate needs no key and no GPU.
+export PYTHONPATH := $(CURDIR)/schema:$(CURDIR)/forge:$(CURDIR)/oracle:$(CURDIR)/eval:$(CURDIR)/baselines/schema_check:$(CURDIR)/baselines/judge:$(CURDIR)/model
 .PHONY: help install lint test validate privacy-gate check-no-tbd check-paths leak-probe \
         baselines judge card
 
@@ -9,8 +10,9 @@ install: ## uv sync with the dev group.
 	uv sync --group dev
 
 lint: ## ruff over packages, tests, and scripts. Scripts only until packages exist.
-	@targets="scripts"; \
-	for d in schema forge oracle eval baselines model tests; do \
+	@set -e; \
+	targets="scripts"; \
+	for d in schema forge oracle eval baselines model cloud tests; do \
 	  if [ -d $$d ]; then targets="$$targets $$d"; fi; \
 	done; \
 	uv run ruff check $$targets; \
