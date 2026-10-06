@@ -1,0 +1,17 @@
+# proctor
+
+A gateway can prove an agent was allowed to call a tool. Proctor prices whether the call was the right one.
+
+Read in this order:
+
+- README.md — the claim, the floor, the limitation
+- CONTRACTS.md — classes, weights, tools, splits, arms
+- docs/PRE-REGISTRATION.md — frozen protocol
+- docs/ETHICS.md — conflict and what data this does not contain
+- docs/RED-TEAM.md — how to break the claim
+- docs/HANDOFF.md — resume point
+
+`make validate` is the exit condition. It needs no key and no GPU.
+The measurement card is `MEASUREMENT_CARD.json` once a run exists.
+Verdict `NOT_VERIFIED` names every unmet claim. That state is honest, not a failure.
+Seed 999 is the untouched test split. It is never a training seed and never a selection seed.
