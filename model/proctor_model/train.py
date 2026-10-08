@@ -175,6 +175,7 @@ def _qlora_grpo(seed: int, rows: list) -> float:
         args=GRPOConfig(
             output_dir=str(ROOT / "artifacts" / "train" / f"seed-{seed}" / "grpo"),
             per_device_train_batch_size=1,
+            generation_batch_size=4,
             max_steps=10,
             num_generations=4,
             learning_rate=1e-5,
@@ -186,21 +187,33 @@ def _qlora_grpo(seed: int, rows: list) -> float:
     )
     grpo.train()
 
+    # Checkpointing disables the KV cache, which makes the 252 greedy decodes
+    # recompute every prefix. Training is finished, so turn the cache back on.
+    model.gradient_checkpointing_disable()
+    model.config.use_cache = True
+
     losses: list[float] = []
-    for task, trace in generate_split("test"):
+    for index, (task, trace) in enumerate(generate_split("test"), start=1):
         messages = [
             {"role": "system", "content": JUDGE_SYSTEM},
             {"role": "user", "content": user_message(task, trace)},
         ]
         device = next(model.parameters()).device
         inputs = tokenizer.apply_chat_template(
-            messages, return_tensors="pt", add_generation_prompt=True
-        ).to(device)
+            messages,
+            return_tensors="pt",
+            add_generation_prompt=True,
+            return_dict=True,
+        )
+        inputs = {key: value.to(device) for key, value in inputs.items()}
+        prompt_len = inputs["input_ids"].shape[-1]
         with torch.no_grad():
-            output = model.generate(inputs, max_new_tokens=256, do_sample=False)
-        text = tokenizer.decode(output[0][inputs.shape[-1] :], skip_special_tokens=True)
+            output = model.generate(**inputs, max_new_tokens=256, do_sample=False)
+        text = tokenizer.decode(output[0][prompt_len:], skip_special_tokens=True)
         pred, _missed = parse_completion(text)
         losses.append(task_loss(task.violations, pred, "enforce"))
+        if index == 1 or index % 36 == 0:
+            print(f"eval {index} {len(losses)}", flush=True)
     return sum(losses) / len(losses)
 
 

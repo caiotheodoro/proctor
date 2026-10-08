@@ -51,3 +51,23 @@ Append-only. An entry is Decision, Rationale, Evidence, Alternatives rejected. T
 **Evidence.** Second `evaluate` matched the stored set on all 84 dev rows. `schema_only` was empty on `wrong_unit` and `poisoned_description` and a single LOW `schema_break` on that cell. Prose around JSON was a parse miss. Two dev dumps matched, including across a second process. `arg_mismatch` rows were one HIGH violation whose result matches the sent arguments. `JUDGE_SYSTEM` matched the section 8 fence text. README numeric tokens are in the card. Verdict remains `NOT_VERIFIED`.
 
 **Alternatives rejected.** Treating the lint failure as a measurement failure. Editing the frozen protocol to drop the judge line from the unmet list.
+
+## 2026-10-07 — Trained arm scored, H4 withholds a win
+
+**Decision.** Publish the four `qlora-grpo` test enforce losses. H4 does not license a claim that the trained arm beats `schema_only`. The verdict stays `NOT_VERIFIED` because the judge artifact is still absent.
+
+**Rationale.** The pre-registered rule is that a win has to clear the across-seed standard deviation. All four seeds returned the same loss, so that deviation is 0, and the trained loss is higher than `schema_only`.
+
+**Evidence.** `artifacts/train/seed-11/manifest.json`, `seed-22`, `seed-33`, and `seed-44`. Each has `backend` `qlora-grpo`, `data_seed_excluded` 999, and `test_enforce_loss` 2.857142857142857. Published figures: enforce loss 2.86, standard deviation 0.0, gap 0.14. `schema_only` enforce mean remains 2.71.
+
+**Alternatives rejected.** Calling the identical seeds a win because the deviation is zero. Substituting a judge score. Editing `docs/PRE-REGISTRATION.md`.
+
+## 2026-10-07 — Judge scored, every completion is a parse miss
+
+**Decision.** Publish the pinned judge on the test split. All 252 completions are parse misses, so each prediction is empty. The verdict is `VERIFIED` because the judge artifact and the four-seed spread both exist.
+
+**Rationale.** The protocol counts unparseable output as an empty prediction and forbids repairing it. A gateway that does not serve `Qwen/Qwen2.5-1.5B-Instruct` is not a substitute.
+
+**Evidence.** `artifacts/judge/test.json`. `model` is `Qwen/Qwen2.5-1.5B-Instruct`, `override` is false, `parse_misses` is 252, enforce mean is 2.857142857142857, audit mean is 14.285714285714286. One completion, fetched from the same server with the section 8 system text, was a fenced copy of the prompt's JSON skeleton, including the placeholder tokens. Published figures: enforce 2.86, audit 14.29.
+
+**Alternatives rejected.** Stripping markdown fences before `json.loads`. Scoring a different Qwen id. Leaving the verdict `NOT_VERIFIED` after both artifacts existed.

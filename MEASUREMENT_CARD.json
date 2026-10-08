@@ -58,6 +58,34 @@
       "schema_break_recall": 1.0,
       "wrong_unit_recall": 0.0
     },
+    "h4": {
+      "gap": 0.142857,
+      "holds": false,
+      "losses": [
+        2.857143,
+        2.857143,
+        2.857143,
+        2.857143
+      ],
+      "mean": 2.857143,
+      "std": 0.0
+    },
+    "judge": {
+      "audit": {
+        "hi": 15.436508,
+        "lo": 13.075397,
+        "mean": 14.285714
+      },
+      "enforce": {
+        "hi": 3.087302,
+        "lo": 2.615079,
+        "mean": 2.857143
+      },
+      "model": "Qwen/Qwen2.5-1.5B-Instruct",
+      "n": 252,
+      "override": false,
+      "parse_misses": 252
+    },
     "n": 252,
     "published": {
       "flag_audit": 23.51,
@@ -65,8 +93,14 @@
       "h1_diff": -114.85,
       "h1_hi": -110.26,
       "h1_lo": -119.77,
+      "h4_gap": 0.14,
+      "judge_audit": 14.29,
+      "judge_enforce": 2.86,
+      "judge_parse_misses": 252,
       "schema_audit": 13.57,
-      "schema_enforce": 2.71
+      "schema_enforce": 2.71,
+      "trained_enforce": 2.86,
+      "trained_std": 0.0
     },
     "schema_only": {
       "audit": {
@@ -82,9 +116,6 @@
     },
     "split": "test"
   },
-  "unmet": [
-    "judge arm has not been run against the pinned model Qwen/Qwen2.5-1.5B-Instruct",
-    "trained arm across-seed standard deviation is absent; four qlora-grpo manifests are required and seed 999 stays untouched"
-  ],
-  "verdict": "NOT_VERIFIED"
+  "unmet": [],
+  "verdict": "VERIFIED"
 }

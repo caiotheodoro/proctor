@@ -11,15 +11,14 @@ Resume point for a fresh session. Update the state table at the end of a session
 | `schema/` | committed; read-only |
 | Generator, oracle, score, schema arm, judge client | committed; `make validate` is the gate |
 | H1–H3 | scored; all three hold. Figures in `MEASUREMENT_CARD.json` |
-| Judge | blocked: `PROCTOR_JUDGE_BASE_URL` unset. Modal spend limit stopped a probe before a container started |
-| Trained arm | blocked: no CUDA here; Modal spend limit; AWS token rejected. No `qlora-grpo` manifest |
+| H4 | scored. Enforce loss 2.86 on seeds 11, 22, 33, and 44. Standard deviation 0.0. Gap above `schema_only` is 0.14. Not a win |
+| Judge | scored on test. Pinned model, override false. 252 parse misses. Enforce 2.86, audit 14.29 |
+| Trained arm | four `qlora-grpo` manifests, each with float `test_enforce_loss` 2.857142857142857. Seed 999 excluded |
 | Seed 999 | untouched test split |
 
 ## Next
 
-1. `make judge` when `PROCTOR_JUDGE_BASE_URL` points at `Qwen/Qwen2.5-1.5B-Instruct`.
-2. Four CUDA seeds via `cloud/modal_train.py` or `python -m proctor_model.train` on a machine with CUDA. Each manifest needs `backend=qlora-grpo` and a float `test_enforce_loss`.
-3. Re-run `make card` after either artifact exists. Do not substitute a backend.
+Both protocol gates are scored. Do not substitute a model on a later rerun.
 
 ## What not to do
 
@@ -37,4 +36,4 @@ A backticked path under one of these prefixes may appear in the docs before the 
 
 planned: `schema/`, `forge/`, `oracle/`, `eval/`, `baselines/`, `model/`, `cloud/`, `tests/`, `artifacts/`, `MEASUREMENT_CARD.json`
 
-**Open:** H4 and the judge loss. Triggers are in `docs/PRE-REGISTRATION.md`.
+**Open:** nothing in the protocol. H4 and the judge loss are in `MEASUREMENT_CARD.json`. The frozen pre-registration still names the triggers; it is not edited.

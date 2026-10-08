@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import statistics
 import sys
 from pathlib import Path
 
@@ -82,6 +83,25 @@ def score_baselines() -> dict:
     return results
 
 
+def trained_losses(artifacts: Path) -> list[float] | None:
+    """Enforce losses for seeds 11, 22, 33, 44, or None when any manifest is unfit."""
+    losses: list[float] = []
+    for seed in (11, 22, 33, 44):
+        path = artifacts / "train" / f"seed-{seed}" / "manifest.json"
+        if not path.exists():
+            return None
+        item = json.loads(path.read_text())
+        loss = item.get("test_enforce_loss")
+        if (
+            item.get("backend") != "qlora-grpo"
+            or item.get("data_seed_excluded") != 999
+            or not isinstance(loss, float)
+        ):
+            return None
+        losses.append(loss)
+    return losses
+
+
 def unmet_claims(artifacts: Path) -> list[str]:
     unmet = []
     judge = artifacts / "judge" / "test.json"
@@ -93,19 +113,7 @@ def unmet_claims(artifacts: Path) -> list[str]:
         payload = json.loads(judge.read_text())
         if payload.get("model") != "Qwen/Qwen2.5-1.5B-Instruct" or payload.get("override"):
             unmet.append("judge artifact is not the pinned model without an override")
-    seeds = (11, 22, 33, 44)
-    manifests = []
-    for seed in seeds:
-        path = artifacts / "train" / f"seed-{seed}" / "manifest.json"
-        if not path.exists():
-            continue
-        manifests.append(json.loads(path.read_text()))
-    good = [
-        item
-        for item in manifests
-        if item.get("backend") == "qlora-grpo" and isinstance(item.get("test_enforce_loss"), float)
-    ]
-    if len(good) < 4:
+    if trained_losses(artifacts) is None:
         unmet.append(
             "trained arm across-seed standard deviation is absent; "
             "four qlora-grpo manifests are required and seed 999 stays untouched"
@@ -113,11 +121,66 @@ def unmet_claims(artifacts: Path) -> list[str]:
     return unmet
 
 
+def attach_trained(results: dict | None, artifacts: Path) -> dict | None:
+    losses = trained_losses(artifacts)
+    if results is None or losses is None:
+        return results
+    schema_mean = float(results["schema_only"]["enforce"]["mean"])
+    mean = sum(losses) / len(losses)
+    spread = statistics.stdev(losses)
+    gap = mean - schema_mean
+    out = dict(results)
+    out["h4"] = {
+        "gap": _round(gap),
+        "holds": (schema_mean - mean) > spread,
+        "losses": [_round(loss) for loss in losses],
+        "mean": _round(mean),
+        "std": _round(spread),
+    }
+    published = dict(out.get("published") or {})
+    published["h4_gap"] = round(gap, 2)
+    published["trained_enforce"] = round(mean, 2)
+    published["trained_std"] = round(spread, 2)
+    out["published"] = published
+    return out
+
+
+def attach_judge(results: dict | None, artifacts: Path) -> dict | None:
+    path = artifacts / "judge" / "test.json"
+    if results is None or not path.exists():
+        return results
+    payload = json.loads(path.read_text())
+    if (
+        payload.get("model") != "Qwen/Qwen2.5-1.5B-Instruct"
+        or payload.get("override")
+        or payload.get("split") != "test"
+    ):
+        return results
+    out = dict(results)
+    audit = payload["losses"]["audit"]
+    enforce = payload["losses"]["enforce"]
+    out["judge"] = {
+        "audit": {key: _round(float(val)) for key, val in audit.items()},
+        "enforce": {key: _round(float(val)) for key, val in enforce.items()},
+        "model": payload["model"],
+        "n": payload["n"],
+        "override": False,
+        "parse_misses": payload["parse_misses"],
+    }
+    published = dict(out.get("published") or {})
+    published["judge_audit"] = round(float(audit["mean"]), 2)
+    published["judge_enforce"] = round(float(enforce["mean"]), 2)
+    published["judge_parse_misses"] = payload["parse_misses"]
+    out["published"] = published
+    return out
+
+
 def emit_card(results: dict | None = None) -> None:
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     if results is None and (ARTIFACTS / "baselines.json").exists():
         results = json.loads((ARTIFACTS / "baselines.json").read_text())
-    payload = build_card(results, unmet_claims(ARTIFACTS))
+    scored = attach_judge(attach_trained(results, ARTIFACTS), ARTIFACTS)
+    payload = build_card(scored, unmet_claims(ARTIFACTS))
     write_card(payload)
 
 

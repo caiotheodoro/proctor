@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import sys
+from pathlib import Path
 
 import modal
 
@@ -28,6 +30,7 @@ image = (
 )
 
 app = modal.App("proctor-train")
+volume = modal.Volume.from_name("proctor-artifacts", create_if_missing=True)
 _PATHS = [
     "/root/proctor/schema",
     "/root/proctor/forge",
@@ -55,20 +58,34 @@ def probe() -> dict:
     }
 
 
-@app.function(image=image, gpu="L4", timeout=60 * 60 * 6)
+@app.function(image=image, gpu="L4", timeout=60 * 60 * 6, volumes={"/artifacts": volume})
 def train_seed(seed: int) -> dict:
     _mount_path()
     from proctor_model.train import train
 
-    return train(seed, "qlora-grpo")
+    payload = train(seed, "qlora-grpo")
+    path = Path("/artifacts") / f"seed-{seed}" / "manifest.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    volume.commit()
+    return payload
 
 
 @app.local_entrypoint()
-def main(mode: str = "probe") -> None:
+def main(mode: str = "probe", seed: int = 0) -> None:
     if mode == "probe":
         print(probe.remote())
         return
     if mode != "train":
         raise SystemExit("mode is probe or train")
-    for seed in (11, 22, 33, 44):
-        print(train_seed.remote(seed))
+    if seed:
+        call = train_seed.spawn(seed)
+        print({"spawned": seed, "call_id": call.object_id})
+        return
+    seeds = (11, 22, 33, 44)
+    for item in seeds:
+        payload = train_seed.remote(item)
+        path = Path("artifacts") / "train" / f"seed-{item}" / "manifest.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+        print(payload)
