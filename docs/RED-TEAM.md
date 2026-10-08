@@ -32,7 +32,7 @@ Signatures and expected ids use canonical JSON. Test: `generate("test")` dumped 
 
 ## A8 — The README cites a number the card does not contain
 
-`tests/test_claims.py` extracts numeric tokens from `README.md` and requires each one to appear in `MEASUREMENT_CARD.json` once that file exists. A result typed into the README ahead of the artifact fails the test.
+`tests/test_claims.py` extracts numeric tokens from `README.md` and requires each one to appear in `MEASUREMENT_CARD.json` once that file exists. A result typed into the README ahead of the artifact fails the test. Digits inside an `http` URL, and a `vX.Y.Z` revision tag, are not measurements.
 
 ## A9 — The conflict writes the hypothesis
 
