@@ -18,7 +18,7 @@ Resume point for a fresh session. Update the state table at the end of a session
 
 ## Next
 
-Both protocol gates are scored. Do not substitute a model on a later rerun.
+Both protocol gates are scored. Publish the generated desk and the seed-11 adapter, then the collection. The adapter ships only when its test enforce loss is the scored 720/252. Do not substitute a model on a later rerun.
 
 ## What not to do
 

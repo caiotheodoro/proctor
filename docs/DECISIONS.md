@@ -71,3 +71,13 @@ Append-only. An entry is Decision, Rationale, Evidence, Alternatives rejected. T
 **Evidence.** `artifacts/judge/test.json`. `model` is `Qwen/Qwen2.5-1.5B-Instruct`, `override` is false, `parse_misses` is 252, enforce mean is 2.857142857142857, audit mean is 14.285714285714286. One completion, fetched from the same server with the section 8 system text, was a fenced copy of the prompt's JSON skeleton, including the placeholder tokens. Published figures: enforce 2.86, audit 14.29.
 
 **Alternatives rejected.** Stripping markdown fences before `json.loads`. Scoring a different Qwen id. Leaving the verdict `NOT_VERIFIED` after both artifacts existed.
+
+## 2026-10-08 — Publish the desk and the scored adapter
+
+**Decision.** Stage the three generated splits as a dataset and persist the seed-11 adapter from a same-recipe rerun. Upload both, then a collection. The adapter ships only when its test enforce loss equals the scored run, 720/252. Seeds 22, 33, and 44 are not re-run.
+
+**Rationale.** The checkpoints were discarded with the container. The four scored losses were identical, so one saved adapter is the row. A rerun that lands on a different loss is a different experiment and is not uploaded as this result.
+
+**Evidence.** `MEASUREMENT_CARD.json` published trained enforce loss 2.86, standard deviation 0.0, gap 0.14, H4 not holding. The publish gate reads that card and the seed-11 manifest. `docs/PRE-REGISTRATION.md` is not edited.
+
+**Alternatives rejected.** Uploading a card with no weights. Uploading a rerun whose loss moved. Editing the frozen protocol to change the training recipe.

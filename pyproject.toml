@@ -30,4 +30,5 @@ pythonpath = [
     "baselines/schema_check",
     "baselines/judge",
     "model",
+    "scripts",
 ]

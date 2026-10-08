@@ -1,7 +1,7 @@
 # Targets are the table of contents. validate needs no key and no GPU.
 export PYTHONPATH := $(CURDIR)/schema:$(CURDIR)/forge:$(CURDIR)/oracle:$(CURDIR)/eval:$(CURDIR)/baselines/schema_check:$(CURDIR)/baselines/judge:$(CURDIR)/model
 .PHONY: help install lint test validate privacy-gate check-no-tbd check-paths leak-probe \
-        baselines judge card
+        baselines judge card publish-dry
 
 help: ## List targets.
 	@grep -E '^[a-z0-9-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
@@ -55,3 +55,7 @@ judge: ## Score the pinned judge. Needs PROCTOR_JUDGE_BASE_URL.
 
 card: ## Rewrite MEASUREMENT_CARD.json from artifacts already on disk.
 	uv run python -m proctor_eval.cli card
+
+publish-dry: ## Stage the Hub cards. Uploads nothing.
+	uv run python scripts/publish_hf.py --dry-run --only dataset
+	uv run python scripts/publish_collection.py

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from proctor_forge import generate
@@ -52,7 +53,11 @@ def write_manifest(seed: int, payload: dict) -> Path:
     return path
 
 
-def train(seed: int, backend: str) -> dict:
+def train(
+    seed: int,
+    backend: str,
+    on_adapter: Callable[[Path], None] | None = None,
+) -> dict:
     if seed not in MODEL_SEEDS:
         raise SystemExit(f"refusing model seed {seed}; allowed seeds are {MODEL_SEEDS}")
     refuse_foreign("train")
@@ -65,13 +70,25 @@ def train(seed: int, backend: str) -> dict:
         raise SystemExit(f"unknown backend {backend}; a substitute is not a result")
     if not cuda_available():
         raise SystemExit("refusing to train without CUDA; the laptop is not a training device")
-    payload["test_enforce_loss"] = _qlora_grpo(seed, rows)
+    payload["test_enforce_loss"] = _qlora_grpo(seed, rows, on_adapter)
     payload["backend"] = "qlora-grpo"
     write_manifest(seed, payload)
     return payload
 
 
-def _qlora_grpo(seed: int, rows: list) -> float:
+def _save_adapter(model, tokenizer, seed: int) -> Path:
+    path = ROOT / "artifacts" / "train" / f"seed-{seed}" / "adapter"
+    path.mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(path)
+    tokenizer.save_pretrained(path)
+    return path
+
+
+def _qlora_grpo(
+    seed: int,
+    rows: list,
+    on_adapter: Callable[[Path], None] | None = None,
+) -> float:
     """4-bit QLoRA supervised pass, then GRPO. Returns test-split enforce loss.
 
     A manifest is written only after this returns a float. An import error or a
@@ -191,6 +208,9 @@ def _qlora_grpo(seed: int, rows: list) -> float:
     # recompute every prefix. Training is finished, so turn the cache back on.
     model.gradient_checkpointing_disable()
     model.config.use_cache = True
+    adapter_path = _save_adapter(model, tokenizer, seed)
+    if on_adapter is not None:
+        on_adapter(adapter_path)
 
     losses: list[float] = []
     for index, (task, trace) in enumerate(generate_split("test"), start=1):

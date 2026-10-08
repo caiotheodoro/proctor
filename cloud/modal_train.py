@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -63,7 +64,14 @@ def train_seed(seed: int) -> dict:
     _mount_path()
     from proctor_model.train import train
 
-    payload = train(seed, "qlora-grpo")
+    def _keep(adapter_path: Path) -> None:
+        dest = Path("/artifacts") / f"seed-{seed}" / "adapter"
+        if dest.exists():
+            shutil.rmtree(dest)
+        shutil.copytree(adapter_path, dest)
+        volume.commit()
+
+    payload = train(seed, "qlora-grpo", on_adapter=_keep)
     path = Path("/artifacts") / f"seed-{seed}" / "manifest.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
