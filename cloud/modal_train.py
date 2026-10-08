@@ -26,7 +26,16 @@ image = (
     .add_local_dir(
         ".",
         remote_path="/root/proctor",
-        ignore=[".venv", ".git", "artifacts", ".worktrees", "**/__pycache__", "**/*.pyc"],
+        ignore=[
+            ".venv",
+            ".git",
+            "artifacts",
+            ".worktrees",
+            "build",
+            "dist",
+            "**/__pycache__",
+            "**/*.pyc",
+        ],
     )
 )
 
