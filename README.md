@@ -20,6 +20,10 @@ The test split is data seed 999, 36 of each of the seven cells. That seed is not
 | Trained arm, four seeds, QLoRA then GRPO | enforce loss 2.86, across-seed standard deviation 0.0, gap 0.14, not a win |
 | Card verdict | `VERIFIED` |
 
+## Published
+
+The code is [github.com/caiotheodoro/proctor](https://github.com/caiotheodoro/proctor) at tag `v0.1.0`. The desk is [caiotheodoro/proctor-desk](https://huggingface.co/datasets/caiotheodoro/proctor-desk). The seed-11 adapter is [caiotheodoro/proctor-qlora-grpo](https://huggingface.co/caiotheodoro/proctor-qlora-grpo). The collection is [Proctor: oracle-priced agent actions](https://huggingface.co/collections/caiotheodoro/proctor-oracle-priced-agent-actions-6ac7cff4a4cc3304ff39f12c).
+
 ## Run
 
 ```sh

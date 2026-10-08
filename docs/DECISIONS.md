@@ -81,3 +81,13 @@ Append-only. An entry is Decision, Rationale, Evidence, Alternatives rejected. T
 **Evidence.** `MEASUREMENT_CARD.json` published trained enforce loss 2.86, standard deviation 0.0, gap 0.14, H4 not holding. The publish gate reads that card and the seed-11 manifest. `docs/PRE-REGISTRATION.md` is not edited.
 
 **Alternatives rejected.** Uploading a card with no weights. Uploading a rerun whose loss moved. Editing the frozen protocol to change the training recipe.
+
+## 2026-10-08 — Collection is on the Hub
+
+**Decision.** Leave the desk, the seed-11 adapter, and the collection published. The `v0.1.0` tag stays on the revision the cards cite.
+
+**Rationale.** The same-recipe rerun returned test enforce loss 2.857142857142857, which is the scored run. GRPO again reported reward standard deviation 0.
+
+**Evidence.** Dataset `caiotheodoro/proctor-desk`. Model `caiotheodoro/proctor-qlora-grpo`. Collection [Proctor: oracle-priced agent actions](https://huggingface.co/collections/caiotheodoro/proctor-oracle-priced-agent-actions-6ac7cff4a4cc3304ff39f12c).
+
+**Alternatives rejected.** Moving the tag onto the link commit. Publishing seeds 22, 33, and 44 again.
